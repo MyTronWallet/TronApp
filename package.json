@@ -17,7 +17,7 @@
 		"lint-styles": "stylelint --ignore-path .eslintignore '**/*.*(css|scss)' --syntax scss",
 		"lint-styles-fix": "yarn --silent lint-styles --fix; exit 0",
 		"package": "yarn build && electron-builder build --publish never",
-		"package-all": "yarn build && electron-builder build -mwl",
+		"package-all": "yarn build && electron-builder build -mwl --icon=./resources/mac/icon.icns",
 		"package-ci": "yarn postinstall && yarn build && electron-builder --publish always",
 		"package-linux": "yarn build && electron-builder build --linux",
 		"package-win": "yarn build && electron-builder build --win --x64",
@@ -33,7 +33,9 @@
 		"test-all": "yarn lint && yarn flow && yarn build && yarn test && yarn build-e2e && yarn test-e2e",
 		"test-e2e": "node -r @babel/register ./internals/scripts/CheckBuiltsExist.js && cross-env NODE_ENV=test testcafe electron:./ ./test/e2e/HomePage.e2e.js",
 		"test-e2e-live": "node -r @babel/register ./internals/scripts/CheckBuiltsExist.js && cross-env NODE_ENV=test testcafe-live electron:./ ./test/e2e/HomePage.e2e.js",
-		"test-watch": "yarn test --watch"
+		"test-watch": "yarn test --watch",
+		"icon-gen": "./node_modules/.bin/electron-icon-maker --input=./resources/icon.png --output=./resources/"
+
 	},
 	"lint-staged": {
 		"*.{js,jsx}": [
@@ -110,37 +112,11 @@
 		"url": "git+https://github.com/tron-app/tron-app.git"
 	},
 	"author": {
-		"name": "Electron React Boilerplte Maintainers",
-		"email": "TronAppboilerplate@gmail.com",
-		"url": "https://tron-app.js.org"
+		"name": "TronApp ",
+		"email": "support@mytron.io",
+		"url": "http://mytron.io"
 	},
-	"contributors": [{
-			"name": "Vikram Rangaraj",
-			"email": "vikr01@icloud.com",
-			"url": "https://github.com/vikr01"
-		},
-		{
-			"name": "Amila Welihinda",
-			"email": "amilajack@gmail.com",
-			"url": "https://github.com/amilajack"
-		}
-	],
 	"license": "MIT",
-	"bugs": {
-		"url": "https://github.com/tron-app/tron-app/issues"
-	},
-	"keywords": [
-		"electron",
-		"boilerplate",
-		"react",
-		"redux",
-		"flow",
-		"sass",
-		"webpack",
-		"hot",
-		"reload"
-	],
-	"homepage": "https://github.com/tron-app/tron-app#readme",
 	"jest": {
 		"testURL": "http://localhost/",
 		"moduleNameMapper": {
@@ -260,6 +236,7 @@
 		"devtron": "^1.4.0",
 		"dom-css": "^2.1.0",
 		"electron-debug": "^2.0.0",
+		"electron-icon-maker": "^0.0.4",
 		"electron-log": "^2.2.17",
 		"electron-updater": "^3.2.3",
 		"formik": "^1.4.0",

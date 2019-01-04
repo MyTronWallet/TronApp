@@ -14,6 +14,7 @@ import { app, BrowserWindow } from "electron";
 import { autoUpdater } from "electron-updater";
 import log from "electron-log";
 import MenuBuilder from "./menu";
+const path = require("path");
 
 export default class AppUpdater {
 	constructor() {
@@ -73,7 +74,10 @@ app.on("ready", async () => {
 		show: false,
 		width: 1100,
 		height: 728,
-		frame: false
+		// frame: false
+		titleBarStyle: "hidden",
+		backgroundColor: "#0E0E0F",
+		icon: path.join(__dirname, "../resources/png/64x64.png")
 	});
 
 	mainWindow.loadURL(`file://${__dirname}/app.html`);

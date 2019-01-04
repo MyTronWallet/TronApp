@@ -262,3 +262,76 @@ body {
 .modal-dialog {
 	word-wrap: break-word;
 }
+
+.input-group-text {
+	border-color: rgba(134, 142, 150, 0.25);
+	color: #999 !important;
+	background: rgba(0, 0, 0, 0.1) !important;
+	border-left-color: #333;
+	cursor: pointer;
+}
+
+.cursor {
+	cursor: pointer;
+}
+
+.icon.cursor {
+	transition: 0.2s ease-in-out;
+	opacity: 1;
+}
+
+.icon.cursor:hover {
+	opacity: 0.75;
+}
+
+
+.loader {
+	position: fixed;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	width: 50px;
+	height: 50px;
+	background-color: #dc3545;
+	border-radius: 50%;
+}
+
+.loader:after {
+	content: '';
+	position: absolute;
+	border-radius: 50%;
+	top: 50%;
+	left: 50%;
+	border: 0px solid #0E0E0F;
+	transform: translate(-50%, -50%);
+	animation: loading 1000ms ease-out forwards infinite;
+}
+
+
+@keyframes loading {
+	0% {
+		border: 0px solid #0E0E0F;
+		width: 50px;
+		height: 50px;
+
+	}
+
+	25% {
+		border: 8px solid #0E0E0F;
+		width: 0%;
+		height: 0%;
+	}
+
+	75% {
+		border: 8px solid #0E0E0F;
+		width: 100%;
+		height: 100%;
+	}
+
+	100% {
+		border: 0px solid #0E0E0F;
+		width: 50px;
+		height: 50px;
+
+	}
+}

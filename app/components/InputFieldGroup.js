@@ -113,11 +113,7 @@ export const InputOptions = ({
 					Choose here
 				</option>
 				{/* <optgroup label="TRC10 Token"> */}
-				{trx && (
-					<option value={"TRX"} selected>
-						TRX ({trx} Available)
-					</option>
-				)}
+				{trx && <option value={"TRX"}>TRX ({trx} Available)</option>}
 				{items &&
 					items.map(
 						item =>

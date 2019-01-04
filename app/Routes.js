@@ -10,9 +10,6 @@ import AuthPage from "./containers/AuthPage";
 // import requireAuth from "./utils/reqiureAuth";
 
 class Routes extends Component {
-	componentWillReceiveProps(nextProps) {
-		console.log({ nextProps });
-	}
 	render() {
 		// console.log(this.props);
 		const renderComp = () => {
