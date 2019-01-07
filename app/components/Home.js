@@ -75,11 +75,13 @@ class Home extends Component<Props> {
 			bandwidth: "0",
 			balance: "0",
 			currentBlock: {},
+			newAssetsList: {},
 			account: {},
 			transactions: {},
 			sendTransaction: {},
 			freezeBalance: {},
 			unfreezeBalance: {},
+			max: "",
 			confirm: false,
 			modal: false
 		};
@@ -109,6 +111,7 @@ class Home extends Component<Props> {
 			this.props.auth.privateKey
 		);
 		const account = await tronWeb.trx.getAccount();
+		// console.log({ account });
 		const _account = await request.get(
 			`https://wlcyapi.tronscan.org/api/account?address=${address}`
 		);
@@ -116,20 +119,43 @@ class Home extends Component<Props> {
 			`https://wlcyapi.tronscan.org/api/transaction?sort=-timestamp&count=true&address=${address}`
 		);
 
-		// const issued = await tronWeb.trx.getTokensIssuedByAddress(
+		const newAssetsList = {};
+		// console.log({ account });
+		account.asset.map(asset => {
+			const x = account.assetV2.find(q => q.value == asset.value);
+			if (x && x.key) {
+				newAssetsList[asset.key] = {
+					key: x.key,
+					value: asset.value
+				};
+			} else {
+				// "ReynaToken"
+				newAssetsList["ReynaToken"] = {
+					key: "1000893",
+					value: account.asset[0].value
+				};
+			}
+		});
+
+		// const sendToken = await tronWeb.transactionBuilder.sendToken(
+		// 	"TJvxXzkc6yDa2JbFymgh7x1StAudbRQqCv",
+		// 	1,
+		// 	"1000317",
 		// 	this.props.auth.address
 		// );
-		// console.log({ issued });
+		// console.log({ sendToken });
 
 		this.setState({
 			isLoading: false,
 			bandwidth,
 			balance,
 			currentBlock,
+			newAssetsList,
 			account: {
 				..._account.data.data[0],
 				...account
 			},
+			max: tronWeb.fromSun(balance),
 			transactions: transactions.data
 		});
 	}
@@ -168,10 +194,10 @@ class Home extends Component<Props> {
 						const sendToken = await tronWeb.transactionBuilder.sendToken(
 							values.to,
 							values.amount,
-							// tronWeb.toSun(values.amount),
-							values.token,
+							`${this.state.newAssetsList[values.token].key}`,
 							this.props.auth.address
 						);
+						// console.log({ sendToken });
 						const signed = await tronWeb.trx.sign(sendToken);
 						const sendTransaction = await tronWeb.trx.sendRawTransaction(
 							signed
@@ -249,10 +275,21 @@ class Home extends Component<Props> {
 				unfreezeBalance: {
 					txID: "unfreezeBalance",
 					error: true,
-					txt: "Something is wrong!"
+					txt:
+						"Unable to unfreeze TRX. This could be caused because the minimal freeze period hasn't been reached yet."
 				}
 			});
 		}
+	}
+
+	currentToken(token) {
+		// console.log(token);
+		const { account } = this.state;
+		return account.asset.find(x => {
+			if (x.key == token) {
+				return x;
+			}
+		});
 	}
 
 	render() {
@@ -271,7 +308,6 @@ class Home extends Component<Props> {
 			confirm
 		} = this.state;
 
-		// console.log(unfreezeBalance);
 		if (isLoading) {
 			return <i className="loader" />;
 		} else {
@@ -281,7 +317,10 @@ class Home extends Component<Props> {
 						<Col xs="3">
 							<Button
 								color="link"
-								onClick={() => window.location.reload()}
+								onClick={() => {
+									this.setState({ isLoading: true });
+									this.getAccountData();
+								}}
 							>
 								<svg
 									className="feather feather-refresh-ccw sc-dnqmqq jxshSx"
@@ -733,19 +772,33 @@ class Home extends Component<Props> {
 							<div>
 								<h3 className="title">Send</h3>
 								<Formik
-									// initialValues={{ privateKey: "" }}
+									initialValues={{
+										to: "",
+										amount: "",
+										token: ""
+									}}
 									validate={values => {
 										let errors = {};
 										if (!values.to) {
 											errors.to =
 												"Please fill a valid address";
 										}
-										if (
-											!values.amount &&
+										if (!values.amount) {
+											errors.amount = "Required";
+										} else if (
 											typeof values.amount !== "number"
 										) {
 											errors.amount =
 												"Please fill a valid number";
+										} else if (
+											values.amount >
+											this.currentToken(values.token)
+												.value
+										) {
+											errors.amount = `Your amount should < ${
+												this.currentToken(values.token)
+													.value
+											}`;
 										}
 
 										if (!values.token) {
@@ -763,9 +816,12 @@ class Home extends Component<Props> {
 									{({
 										isSubmitting,
 										isValid,
-										setFieldValue
+										setFieldValue,
+										errors,
+										touched
 									}) => (
 										<Form>
+											{/* {console.log({ isValid, touched })} */}
 											<Field
 												type="text"
 												name="to"
@@ -781,6 +837,20 @@ class Home extends Component<Props> {
 												items={account.asset}
 												trx={tronWeb.fromSun(balance)}
 												component={InputOptions}
+												onChange={e => {
+													const value = this.currentToken(
+														e.target.value
+													).value;
+
+													this.setState({
+														max: value
+													});
+
+													setFieldValue(
+														"token",
+														e.target.value
+													);
+												}}
 											/>
 											<Field
 												type="number"
@@ -792,7 +862,7 @@ class Home extends Component<Props> {
 												clickOnIcon={() =>
 													setFieldValue(
 														"amount",
-														tronWeb.fromSun(balance)
+														this.state.max
 													)
 												}
 												// clickOnIcon={() =>

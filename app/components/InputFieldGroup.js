@@ -33,7 +33,7 @@ export const InputFieldGroup = ({
 	);
 	return (
 		<div className="mb-1">
-			<label className="label" htmlFor={id}>
+			<label className="label" htmlFor={field.name}>
 				{props.label}
 				{touched[field.name] && errors[field.name] && (
 					<span className="text-danger pl-1">
@@ -44,7 +44,7 @@ export const InputFieldGroup = ({
 			<div className="input-group mb-1">
 				<input
 					className="form-control"
-					id={id}
+					id={field.name}
 					type="text"
 					{...field}
 					{...props}
@@ -62,10 +62,11 @@ export const InputField = ({
 	form: { touched, errors }, // also values, setXXXX, handleXXXX, dirty, isValid, status, etc.
 	...props
 }) => {
-	const id = shortid();
+	// const id = shortid();
+	// console.log({ touched: touched[field.name] });
 	return (
 		<div className="mb-1">
-			<label className="label" htmlFor={id}>
+			<label className="label" htmlFor={field.name}>
 				{props.label}
 				{touched[field.name] && errors[field.name] && (
 					<span className="text-danger pl-1">
@@ -75,7 +76,7 @@ export const InputField = ({
 			</label>
 			<input
 				className="form-control mb-1"
-				id={id}
+				id={field.name}
 				type="text"
 				{...field}
 				{...props}
@@ -91,10 +92,10 @@ export const InputOptions = ({
 	trx,
 	...props
 }) => {
-	const id = shortid();
+	// const id = shortid();
 	return (
 		<div className="mb-1">
-			<label className="label" htmlFor={id}>
+			<label className="label" htmlFor={field.name}>
 				{props.label}
 				{touched[field.name] && errors[field.name] && (
 					<span className="text-danger pl-1">
@@ -104,14 +105,14 @@ export const InputOptions = ({
 			</label>
 			<select
 				className="form-control mb-1"
-				id={id}
+				id={field.name}
 				type="text"
 				{...field}
 				{...props}
 			>
-				<option value="" selected disabled hidden>
+				{/* <option value="" selected disabled hidden>
 					Choose here
-				</option>
+				</option> */}
 				{/* <optgroup label="TRC10 Token"> */}
 				{trx && <option value={"TRX"}>TRX ({trx} Available)</option>}
 				{items &&
@@ -146,7 +147,7 @@ export const Checkbox = ({
 		<div>
 			<input
 				name={name}
-				id={id}
+				id={field.name}
 				type="checkbox"
 				value={value}
 				checked={value}
@@ -154,8 +155,8 @@ export const Checkbox = ({
 				onBlur={onBlur}
 				className={classNames("radio-button")}
 			/>
-			<label htmlFor={id}>{label}</label>
-			{touched[name] && <InputFeedback error={errors[name]} />}
+			<label htmlFor={field.name}>{label}</label>
+			{/* {touched[name] && <InputFeedback error={errors[name]} />} */}
 		</div>
 	);
 };
