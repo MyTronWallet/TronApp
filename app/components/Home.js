@@ -75,7 +75,7 @@ class Home extends Component<Props> {
 			bandwidth: "0",
 			balance: "0",
 			currentBlock: {},
-			newAssetsList: {},
+			newAssetsList: [],
 			account: {},
 			transactions: {},
 			sendTransaction: {},
@@ -119,23 +119,33 @@ class Home extends Component<Props> {
 			`https://wlcyapi.tronscan.org/api/transaction?sort=-timestamp&count=true&address=${address}`
 		);
 
-		const newAssetsList = {};
+		const newAssetsList = [];
 		// console.log({ account });
-		account.asset.map(asset => {
-			const x = account.assetV2.find(q => q.value == asset.value);
-			if (x && x.key) {
-				newAssetsList[asset.key] = {
-					key: x.key,
-					value: asset.value
-				};
-			} else {
-				// "ReynaToken"
-				newAssetsList["ReynaToken"] = {
-					key: "1000893",
-					value: account.asset[0].value
-				};
-			}
+		account.assetV2.map(async asset => {
+			// console.log({ asset });
+			const getId = await tronWeb.trx.getTokenFromID(asset.key);
+			const newToken = {
+				id: asset.key,
+				key: getId.name,
+				value: asset.value
+			};
+			newAssetsList.push(newToken);
 		});
+		// account.asset.map(asset => {
+		// 	const x = account.assetV2.find(q => q.value == asset.value);
+		// 	if (x && x.key) {
+		// 		newAssetsList[asset.key] = {
+		// 			key: x.key,
+		// 			value: asset.value
+		// 		};
+		// 	} else {
+		// 		// "ReynaToken"
+		// 		newAssetsList["ReynaToken"] = {
+		// 			key: "1000893",
+		// 			value: account.asset[0].value
+		// 		};
+		// 	}
+		// });
 
 		// const sendToken = await tronWeb.transactionBuilder.sendToken(
 		// 	"TJvxXzkc6yDa2JbFymgh7x1StAudbRQqCv",
@@ -194,7 +204,7 @@ class Home extends Component<Props> {
 						const sendToken = await tronWeb.transactionBuilder.sendToken(
 							values.to,
 							values.amount,
-							`${this.state.newAssetsList[values.token].key}`,
+							`${this.currentToken(values.token).id}`,
 							this.props.auth.address
 						);
 						// console.log({ sendToken });
@@ -284,8 +294,8 @@ class Home extends Component<Props> {
 
 	currentToken(token) {
 		// console.log(token);
-		const { account } = this.state;
-		return account.asset.find(x => {
+		const { newAssetsList } = this.state;
+		return newAssetsList.find(x => {
 			if (x.key == token) {
 				return x;
 			}
@@ -795,7 +805,7 @@ class Home extends Component<Props> {
 											this.currentToken(values.token)
 												.value
 										) {
-											errors.amount = `Your amount should < ${
+											errors.amount = `Your amount should <= ${
 												this.currentToken(values.token)
 													.value
 											}`;
@@ -834,7 +844,7 @@ class Home extends Component<Props> {
 												name="token"
 												label="Token"
 												placeholder="Token..."
-												items={account.asset}
+												items={this.state.newAssetsList}
 												trx={tronWeb.fromSun(balance)}
 												component={InputOptions}
 												onChange={e => {
@@ -856,8 +866,8 @@ class Home extends Component<Props> {
 												type="number"
 												name="amount"
 												label="Amount"
-												step="0.000001"
-												placeholder="0.000000"
+												// step="0.000001"
+												placeholder="0"
 												icon="MAX"
 												clickOnIcon={() =>
 													setFieldValue(
