@@ -1,8 +1,8 @@
 {
 	"name": "tron-app",
 	"productName": "TropApp",
-	"version": "0.0.1",
-	"description": "Electron application boilerplate based on React, React Router, Webpack, React Hot Loader for rapid application development",
+	"version": "1.0.0",
+	"description": "Tron app for desktop",
 	"scripts": {
 		"build": "concurrently \"yarn build-main\" \"yarn build-renderer\"",
 		"build-dll": "cross-env NODE_ENV=development webpack --config ./configs/webpack.config.renderer.dev.dll.babel.js --colors",

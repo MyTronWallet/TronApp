@@ -119,51 +119,26 @@ class Home extends Component<Props> {
 			`https://wlcyapi.tronscan.org/api/transaction?sort=-timestamp&count=true&address=${address}`
 		);
 
-		const newAssetsList = [];
-		// console.log({ account });
-
 		if (account.assetV2) {
 			account.assetV2.map(async asset => {
-				// console.log({ asset });
 				const getId = await tronWeb.trx.getTokenFromID(asset.key);
 				const newToken = {
 					id: asset.key,
 					key: getId.name,
 					value: asset.value
 				};
-				newAssetsList.push(newToken);
+				this.setState(previous => ({
+					newAssetsList: [...previous.newAssetsList, newToken]
+				}));
 			});
 		}
-		// account.asset.map(asset => {
-		// 	const x = account.assetV2.find(q => q.value == asset.value);
-		// 	if (x && x.key) {
-		// 		newAssetsList[asset.key] = {
-		// 			key: x.key,
-		// 			value: asset.value
-		// 		};
-		// 	} else {
-		// 		// "ReynaToken"
-		// 		newAssetsList["ReynaToken"] = {
-		// 			key: "1000893",
-		// 			value: account.asset[0].value
-		// 		};
-		// 	}
-		// });
-
-		// const sendToken = await tronWeb.transactionBuilder.sendToken(
-		// 	"TJvxXzkc6yDa2JbFymgh7x1StAudbRQqCv",
-		// 	1,
-		// 	"1000317",
-		// 	this.props.auth.address
-		// );
-		// console.log({ sendToken });
 
 		this.setState({
 			isLoading: false,
 			bandwidth,
 			balance,
 			currentBlock,
-			newAssetsList,
+			// newAssetsList,
 			account: {
 				..._account.data.data[0],
 				...account
@@ -173,9 +148,12 @@ class Home extends Component<Props> {
 		});
 	}
 
-	componentDidMount() {
+	componentWillMount() {
 		this.getAccountData();
 	}
+	// componentDidMount() {
+	// 	this.getAccountData();
+	// }
 
 	onSubmit(values) {
 		// console.log(values);
@@ -319,10 +297,10 @@ class Home extends Component<Props> {
 			freezeBalance,
 			unfreezeBalance,
 			confirm,
-			max
+			max,
+			newAssetsList
 		} = this.state;
 
-		// console.log({ max });
 		if (isLoading) {
 			return <i className="loader" />;
 		} else {
@@ -566,11 +544,11 @@ class Home extends Component<Props> {
 											style={{ height: 200 }}
 										>
 											<div className="ls-group">
-												{account.asset &&
-													account.asset.map(
+												{newAssetsList &&
+													newAssetsList.map(
 														(asset, i) => (
 															<div
-																key={asset.key}
+																key={asset.id}
 																className="ls-group-item"
 															>
 																<div className="key light">
