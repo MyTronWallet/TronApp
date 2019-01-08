@@ -315,9 +315,11 @@ class Home extends Component<Props> {
 			sendTransaction,
 			freezeBalance,
 			unfreezeBalance,
-			confirm
+			confirm,
+			max
 		} = this.state;
 
+		// console.log({ max });
 		if (isLoading) {
 			return <i className="loader" />;
 		} else {
@@ -789,6 +791,18 @@ class Home extends Component<Props> {
 									}}
 									validate={values => {
 										let errors = {};
+										let value = this.currentToken(
+											values.token
+										);
+										if (value) {
+											value = value.value;
+										} else {
+											value = tronWeb.fromSun(balance);
+										}
+
+										const pattern = /^\d+$/;
+										// const x = pattern.test(values.amount);
+										// console.log({ x, values });
 										if (!values.to) {
 											errors.to =
 												"Please fill a valid address";
@@ -796,19 +810,13 @@ class Home extends Component<Props> {
 										if (!values.amount) {
 											errors.amount = "Required";
 										} else if (
-											typeof values.amount !== "number"
+											// typeof values.amount !== "number"
+											!pattern.test(values.amount)
 										) {
 											errors.amount =
 												"Please fill a valid number";
-										} else if (
-											values.amount >
-											this.currentToken(values.token)
-												.value
-										) {
-											errors.amount = `Your amount should <= ${
-												this.currentToken(values.token)
-													.value
-											}`;
+										} else if (values.amount > value) {
+											errors.amount = `Your amount should <= ${value}`;
 										}
 
 										if (!values.token) {
@@ -859,7 +867,9 @@ class Home extends Component<Props> {
 													if (value) {
 														value = value.value;
 													} else {
-														value = e.target.value;
+														value = tronWeb.fromSun(
+															balance
+														);
 													}
 
 													this.setState({
@@ -877,6 +887,7 @@ class Home extends Component<Props> {
 												name="amount"
 												label="Amount"
 												// step="0.000001"
+												pattern="\d*"
 												placeholder="0"
 												icon="MAX"
 												clickOnIcon={() =>
