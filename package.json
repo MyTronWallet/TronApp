@@ -19,7 +19,9 @@
 		"package": "yarn build && electron-builder build --publish never",
 		"package-all": "yarn build && electron-builder build -mwl",
 		"package-ci": "yarn postinstall && yarn build && electron-builder --publish always",
-		"package-linux": "yarn build && electron-builder build --linux",
+		"package-linux": "electron-builder --linux --x64",
+		"package--linux": "electron-packager .  electron-tutorial-app --overwrite --asar=true --platform=linux --arch=x64 --icon=assets/icons/png/1024x1024.png --prune=true --out=release-builds",
+		"create-debian-installer": "electron-installer-debian --src release-builds/electron-tutorial-app-linux-x64/ --arch amd64 --config debian.json",
 		"package-win": "yarn build && electron-builder build --win --x64",
 		"postinstall": "yarn flow-typed && electron-builder install-app-deps package.json && yarn build-dll && opencollective-postinstall",
 		"postlint-fix": "prettier --ignore-path .eslintignore --single-quote --write '**/*.{*{js,jsx,json},babelrc,eslintrc,prettierrc,stylelintrc}'",
@@ -89,11 +91,9 @@
 		},
 		"linux": {
 			"target": [
-				"deb",
-				"rpm",
-				"snap",
-				"AppImage"
+				"deb"
 			],
+			"icon": "./resources/icon/1024x1024.png",
 			"category": "Development"
 		},
 		"directories": {

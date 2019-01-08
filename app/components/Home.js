@@ -121,16 +121,19 @@ class Home extends Component<Props> {
 
 		const newAssetsList = [];
 		// console.log({ account });
-		account.assetV2.map(async asset => {
-			// console.log({ asset });
-			const getId = await tronWeb.trx.getTokenFromID(asset.key);
-			const newToken = {
-				id: asset.key,
-				key: getId.name,
-				value: asset.value
-			};
-			newAssetsList.push(newToken);
-		});
+
+		if (account.assetV2) {
+			account.assetV2.map(async asset => {
+				// console.log({ asset });
+				const getId = await tronWeb.trx.getTokenFromID(asset.key);
+				const newToken = {
+					id: asset.key,
+					key: getId.name,
+					value: asset.value
+				};
+				newAssetsList.push(newToken);
+			});
+		}
 		// account.asset.map(asset => {
 		// 	const x = account.assetV2.find(q => q.value == asset.value);
 		// 	if (x && x.key) {
@@ -227,7 +230,6 @@ class Home extends Component<Props> {
 	}
 
 	async onSubmitFreeze(values) {
-		// console.log(values);
 		let resource = "";
 		if (values.type === "0") {
 			resource = "BANDWIDTH";
@@ -242,6 +244,7 @@ class Home extends Component<Props> {
 				this.props.auth.address
 			);
 
+			console.log(freezeBalance);
 			const signed = await tronWeb.trx.sign(freezeBalance);
 			const sendFreeze = await tronWeb.trx.sendRawTransaction(signed);
 			// console.log({ sendFreeze });

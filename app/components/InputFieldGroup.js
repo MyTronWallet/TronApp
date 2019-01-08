@@ -110,7 +110,7 @@ export const InputOptions = ({
 				{...field}
 				{...props}
 			>
-				<option value="" disabled hidden>
+				<option value="" selected disabled>
 					Choose here
 				</option>
 				{/* <optgroup label="TRC10 Token"> */}
