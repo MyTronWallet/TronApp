@@ -826,12 +826,17 @@ class Home extends Component<Props> {
 									{({
 										isSubmitting,
 										isValid,
+										isValidating,
 										setFieldValue,
 										errors,
 										touched
 									}) => (
 										<Form>
-											{/* {console.log({ isValid, touched })} */}
+											{/* {console.log({
+												isValid,
+												touched,
+												isValidating
+											})} */}
 											<Field
 												type="text"
 												name="to"
@@ -848,9 +853,14 @@ class Home extends Component<Props> {
 												trx={tronWeb.fromSun(balance)}
 												component={InputOptions}
 												onChange={e => {
-													const value = this.currentToken(
+													let value = this.currentToken(
 														e.target.value
-													).value;
+													);
+													if (value) {
+														value = value.value;
+													} else {
+														value = e.target.value;
+													}
 
 													this.setState({
 														max: value
@@ -887,7 +897,7 @@ class Home extends Component<Props> {
 													color="danger"
 													type="submit"
 													className="mr-2"
-													disabled={isSubmitting}
+													disabled={!isValid}
 												>
 													Send
 												</Button>
